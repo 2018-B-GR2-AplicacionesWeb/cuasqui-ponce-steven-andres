@@ -29,6 +29,42 @@ console.log(typeof adrian);
 var adrianJSON ={
     "":""
 };
+
+if(true){
+    //SI
+}else{
+    //NO
+}
+
+if('No'){
+    //SI
+}else{
+    //NO
+}
+
+if(0){
+    //SI
+}else{
+    //NO
+}
+
+if({}){
+    //SI
+}else{
+    //NO
+}
+
+if(null){
+    //SI
+}else{
+    //NO
+}
+
+if(undefined){
+    //SI
+}else{
+    //NO
+}
 //No Tipado: no tiene tipos
 //var edad=10;
 //Tipado:
