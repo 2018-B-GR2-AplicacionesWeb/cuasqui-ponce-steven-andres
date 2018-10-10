@@ -1,4 +1,4 @@
-{
+[{
   "llave":"valor",
   "numero":1,
   "casado":true,
@@ -6,4 +6,4 @@
   "casa":{
     "llave":"valor"
   }
-}
+}]
