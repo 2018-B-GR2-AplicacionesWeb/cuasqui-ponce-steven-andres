@@ -1,27 +1,72 @@
 declare var require:any;
-declare var Promise:any;
+//declare var Promise:any;
 const fs = require('fs');
 const rxjs = require('rxjs');
 const inquirer = require('inquirer');
+const menu = [
+    {
+        type: 'list',
+        name: 'menu',
+        message: 'Que desea hacer ?',
+        choices: [
+            'Ingresar Cliente',
+            'Consultar Clientes',
+            'Modificar Cliente',
+            'Borrar Cliente',
+            new inquirer.Separator(),
+            'Salir  - > x'
+        ]
+    }
 
+]
 function main(){
+    //
+    // console.log("Acciones para cliente"
+    // +"\n1.- Ingresar Cliente"
+    // +"\n2.- Mostrar Clientes"
+    // +"\n3.- Actualizar Clientes"
+    // +"\n4.- Eliminar Clientes")
+    const opc = inquirer.prompt(menu);
 
-    console.log("Acciones para cliente"
-    +"\n1.- Ingresar Cliente"
-    +"\n2.- Mostrar Clientes"
-    +"\n3.- Actualizar Clientes"
-    +"\n4.- Eliminar Clientes")
+    switch (opc.menu){
+        case 'Ingresar Cliente':{
+            var clienteO:{
+                cedula:string
+                nombre:string
+                apellido:string
 
+            }={
+                cedula:"1725054017",
+                nombre: "Ale",
+                apellido: "Yanez"
+            };
+            ingresarCliente(clienteO)
+        }
+        case 'Consultar Clientes':{
+            consultarClientes()
+        }
+        case 'Modificar Cliente':{
+
+        }
+        case 'Borrar Cliente':{
+
+        }
+        default:{
+            console.log("Usted ha salido")
+        }
+    }
 
 
 }
-
+main();
 function consultarClientes():Promise<string>{
 
     return new Promise(
         (resolve) => {
+            // console.log("1")
             fs.readFile('clientes.json', "handleJSONFile",
                 (error, contenidoArchivo) => {
+                    //console.log("2")
                     if (error) {
                         var advertencia = "Error en la consulta del cliente"
                         resolve(
@@ -99,8 +144,12 @@ function modificarCliente(clienteMod){
 }
 
 function ingresarCliente(clienteAñad) {
+
+    //console.log("1")
     return new Promise(
+
         (resolve, reject) => {
+            //console.log("2")
             fs.readFile('clientes.json', 'utf-8',
                 (err, contenido) => {
                     if (err) {
@@ -108,6 +157,9 @@ function ingresarCliente(clienteAñad) {
                     } else {
                         const basedeClientes = JSON.parse(contenido);
 
+                        clienteAñad.cedula="1725054017"
+                        clienteAñad.nombre="Ale"
+                        clienteAñad.apellido="Yanez"
 
                         basedeClientes.push(clienteAñad);
                         fs.writeFile(
