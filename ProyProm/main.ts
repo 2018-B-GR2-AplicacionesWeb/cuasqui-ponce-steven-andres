@@ -6,9 +6,15 @@ const inquirer = require('inquirer');
 
 function main(){
 
-}
+    console.log("Acciones para cliente"
+    +"\n1.- Ingresar Cliente"
+    +"\n2.- Mostrar Clientes"
+    +"\n3.- Actualizar Clientes"
+    +"\n4.- Eliminar Clientes")
 
-consultarClientes();
+
+
+}
 
 function consultarClientes():Promise<string>{
 
