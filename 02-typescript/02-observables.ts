@@ -2,7 +2,7 @@
 
 
 declare var require:any;
-
+declare var Promise:any;
 const rxjs = require('rxjs');
 const map = require('rxjs/operators').map;
 const dist = require('rxjs/operators').distinct;
