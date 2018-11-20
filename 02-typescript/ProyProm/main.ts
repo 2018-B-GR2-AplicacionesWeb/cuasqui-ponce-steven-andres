@@ -1,5 +1,5 @@
 declare var require:any;
-//declare var Promise:any;
+declare var Promise:any;
 const fs = require('fs');
 const rxjs = require('rxjs');
 const inquirer = require('inquirer');
@@ -17,7 +17,6 @@ const menu = [
             'Salir  - > x'
         ]
     }
-
 ]
 function main(){
     //
@@ -64,7 +63,7 @@ function consultarClientes():Promise<string>{
     return new Promise(
         (resolve) => {
             // console.log("1")
-            fs.readFile('clientes.json', "handleJSONFile",
+            fs.readFile('clientes.json', "utf-8",
                 (error, contenidoArchivo) => {
                     //console.log("2")
                     if (error) {
