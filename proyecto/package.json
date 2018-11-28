@@ -9,6 +9,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@types/node": "^10.12.10",
+    "inquirer": "^6.2.0",
     "nodejs": "0.0.0",
     "rxjs": "^6.3.3",
     "typescript": "^3.1.6"
