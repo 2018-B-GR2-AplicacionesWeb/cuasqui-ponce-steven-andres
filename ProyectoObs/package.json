@@ -1,0 +1,18 @@
+{
+  "name": "proyectoobs",
+  "version": "1.0.0",
+  "description": "Proyecto Web Observables",
+  "main": "index.js",
+  "dependencies": {
+    "@types/node": "^10.12.10",
+    "express": "^4.16.4",
+    "nodejs": "0.0.0",
+    "rxjs": "^6.3.3"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}
