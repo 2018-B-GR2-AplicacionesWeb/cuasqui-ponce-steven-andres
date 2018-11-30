@@ -43,13 +43,14 @@ const preguntaEdicionUsuario = [
         message: 'Ingrese nuevo nombre'
     },
 ];
-main();
 async function main() {
     // 1) Inicializar bdd -- DONE
     // 2) Preguntas Menu -- DONE
     // 3) Opciones de Respuesta --  DONE
     // 4) ACCCION!!!!  -- DONE
     // 5) Guardar BDD --
+    // of(Cualquier cosa JS)
+    // from(Promesas)
     const respuestaBDD$ = rxjs.from(inicialiarBDD());
     respuestaBDD$
         .pipe(preguntarOpcionesMenu(), opcionesRespuesta(), ejecutarAcccion(), guardarBaseDeDatos())

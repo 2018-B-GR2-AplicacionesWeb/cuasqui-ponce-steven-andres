@@ -10,7 +10,7 @@ const delayWhen = require('rxjs/operators').delayWhen;
 const preguntaMenu = {
     type: 'list',
     name: 'opcionMenu',
-    message: 'Que quieres hacer',
+    message: '¿Que quiere hacer?',
     choices: [
         'Crear',
         'Borrar',
@@ -19,77 +19,36 @@ const preguntaMenu = {
     ]
 };
 
-const preguntaBuscarUsuario = [
-    {
-        type: 'input',
-        name: 'idUsuario',
-        message: 'Ingrese ID Usuario',
-    }
-];
-
 const preguntaUsuario = [
     {
         type: 'input',
         name: 'id',
-        message: 'Cual es tu id'
+        message: 'Ingrese ID'
     },
     {
         type: 'input',
         name: 'nombre',
-        message: 'Cual es tu nombre'
+        message: 'Ingrese nombre'
     },
+];
+
+const preguntaBuscarUsuario = [
+    {
+        type: 'input',
+        name: 'idUsuario',
+        message: 'Ingrese ID a buscar',
+    }
 ];
 
 const preguntaEdicionUsuario = [
     {
         type: 'input',
         name: 'nombre',
-        message: 'Cual es el nuevo nombre'
+        message: 'Ingrese nuevo nombre'
     },
 ];
 
-
-function inicialiarBDD() {
-
-    return new Promise(
-        (resolve, reject) => {
-            fs.readFile(
-                'bdd.json',
-                'utf-8',
-                (error, contenidoArchivo) => { // CALLBACK
-                    if (error) {
-
-                        fs.writeFile(
-                            'bdd.json',
-                            '{"usuarios":[],"mascotas":[]}',
-                            (error) => {
-                                if (error) {
-                                    reject({
-                                        mensaje: 'Error creando',
-                                        error: 500
-                                    })
-                                } else {
-                                    resolve({
-                                        mensaje: 'BDD leida',
-                                        bdd: JSON.parse('{"usuarios":[],"mascotas":[]}')
-                                    })
-                                }
-
-                            }
-                        )
-
-                    } else {
-                        resolve({
-                            mensaje: 'BDD leida',
-                            bdd: JSON.parse(contenidoArchivo)
-                        })
-                    }
-                }
-            )
-        }
-    );
-
-}
+main()
 
 async function main() {
 
@@ -99,9 +58,6 @@ async function main() {
     // 4) ACCCION!!!!  -- DONE
     // 5) Guardar BDD --
 
-
-    // of(Cualquier cosa JS)
-    // from(Promesas)
     const respuestaBDD$ = rxjs.from(inicialiarBDD());
 
     respuestaBDD$
@@ -148,6 +104,48 @@ async function main() {
     */
 }
 
+function inicialiarBDD() {
+
+    return new Promise(
+        (resolve, reject) => {
+            fs.readFile(
+                'bdd.json',
+                'utf-8',
+                (error, contenidoArchivo) => {
+                    if (error) {
+
+                        fs.writeFile(
+                            'bdd.json',
+                            '{"usuarios":[],"perros":[]}',
+                            (error) => {
+                                if (error) {
+                                    reject({
+                                        mensaje: 'Error creando',
+                                        error: 500
+                                    })
+                                } else {
+                                    resolve({
+                                        mensaje: 'BDD leida',
+                                        bdd: JSON.parse('{"usuarios":[],"perros":[]}')
+                                    })
+                                }
+
+                            }
+                        )
+
+                    } else {
+                        resolve({
+                            mensaje: 'BDD leida',
+                            bdd: JSON.parse(contenidoArchivo)
+                        })
+                    }
+                }
+            )
+        }
+    );
+
+}
+
 function guardarBDD(bdd: BDD) {
     return new Promise(
         (resolve, reject) => {
@@ -173,117 +171,24 @@ function guardarBDD(bdd: BDD) {
     )
 }
 
-
-main();
-
-
 function preguntarOpcionesMenu() {
-    return mergeMap( // Respuesta Anterior Observable
+    return mergeMap(
         (respuestaBDD: RespuestaBDD) => {
 
             return rxjs
                 .from(inquirer.prompt(preguntaMenu))
                 .pipe(
-                    map( // respuesta ant obs
+                    map(
                         (respuesta: OpcionMenu) => {
                             respuestaBDD.opcionMenu = respuesta;
                             return respuestaBDD
-                            // Cualquier cosa JS
+
                         }
                     )
                 );
 
-            // OBSERVABLE!!!!!!!!!!
         }
     )
-}
-
-function opcionesRespuesta() {
-    return mergeMap(
-        (respuestaBDD: RespuestaBDD) => {
-            const opcion = respuestaBDD.opcionMenu.opcionMenu;
-            switch (opcion) {
-                case 'Crear':
-                    return rxjs
-                        .from(inquirer.prompt(preguntaUsuario))
-                        .pipe(
-                            map(
-                                (usuario: Usuario) => { // resp ant OBS
-                                    respuestaBDD.usuario = usuario;
-                                    return respuestaBDD;
-                                }
-                            )
-                        );
-                case 'Buscar':
-                    break;
-                case 'Actualizar':
-                    return preguntarIdUsuario(respuestaBDD);
-                case 'Borrar':
-                    break;
-            }
-        }
-    )
-}
-
-function guardarBaseDeDatos() {
-    return mergeMap(// Respuesta del anterior OBS
-        (respuestaBDD: RespuestaBDD) => {
-            // OBS
-            return rxjs.from(guardarBDD(respuestaBDD.bdd))
-        }
-    )
-}
-
-function ejecutarAcccion() {
-    return map( // Respuesta del anterior OBS
-        (respuestaBDD: RespuestaBDD) => {
-            const opcion = respuestaBDD.opcionMenu.opcionMenu;
-            switch (opcion) {
-                case 'Crear':
-                    const usuario = respuestaBDD.usuario;
-                    respuestaBDD.bdd.usuarios.push(usuario);
-                    return respuestaBDD;
-                case 'Actualizar':
-                    const indice = respuestaBDD.indiceUsuario;
-                    respuestaBDD.bdd.usuarios[indice].nombre = respuestaBDD.usuario.nombre;
-                    return respuestaBDD;
-
-            }
-        }
-    )
-}
-
-interface RespuestaBDD {
-    mensaje: string;
-    bdd: BDD;
-    opcionMenu?: OpcionMenu;
-    usuario?: Usuario;
-    indiceUsuario?: number;
-}
-
-interface BDD {
-    usuarios: Usuario[] | any;
-    mascotas: Mascota[];
-}
-
-
-interface Usuario {
-    id: number;
-    nombre: string;
-}
-
-interface Mascota {
-    id: number;
-    nombre: string;
-    idUsuario: number;
-}
-
-interface OpcionMenu {
-    opcionMenu: 'Crear' | 'Borrar' | 'Buscar' | 'Actualizar';
-}
-
-interface BuscarUsuarioPorId {
-    idUsuario: string;
 }
 
 function preguntarIdUsuario(respuestaBDD: RespuestaBDD) {
@@ -321,4 +226,91 @@ function preguntarIdUsuario(respuestaBDD: RespuestaBDD) {
                 }
             )
         );
+}
+
+function opcionesRespuesta() {
+    return mergeMap(
+        (respuestaBDD: RespuestaBDD) => {
+            const opcion = respuestaBDD.opcionMenu.opcionMenu;
+            switch (opcion) {
+                case 'Crear':
+                    return rxjs
+                        .from(inquirer.prompt(preguntaUsuario))
+                        .pipe(
+                            map(
+                                (usuario: Usuario) => { // resp ant OBS
+                                    respuestaBDD.usuario = usuario;
+                                    return respuestaBDD;
+                                }
+                            )
+                        );
+                case 'Buscar':
+                    break;
+                case 'Actualizar':
+                    return preguntarIdUsuario(respuestaBDD);
+                case 'Borrar':
+                    break;
+            }
+        }
+    )
+}
+
+function ejecutarAcccion() {
+    return map( // Respuesta del anterior OBS
+        (respuestaBDD: RespuestaBDD) => {
+            const opcion = respuestaBDD.opcionMenu.opcionMenu;
+            switch (opcion) {
+                case 'Crear':
+                    const usuario = respuestaBDD.usuario;
+                    respuestaBDD.bdd.usuarios.push(usuario);
+                    return respuestaBDD;
+                case 'Actualizar':
+                    const indice = respuestaBDD.indiceUsuario;
+                    respuestaBDD.bdd.usuarios[indice].nombre = respuestaBDD.usuario.nombre;
+                    return respuestaBDD;
+
+            }
+        }
+    )
+}
+
+function guardarBaseDeDatos() {
+    return mergeMap(// Respuesta del anterior OBS
+        (respuestaBDD: RespuestaBDD) => {
+            // OBS
+            return rxjs.from(guardarBDD(respuestaBDD.bdd))
+        }
+    )
+}
+
+interface BDD {
+    usuarios: Usuario[] | any;
+    mascotas: Perro[];
+}
+
+interface Usuario {
+    id: number;
+    nombre: string;
+}
+
+interface Perro {
+    id: number;
+    nombre: string;
+    idUsuario: number;
+}
+
+interface RespuestaBDD {
+    mensaje: string;
+    bdd: BDD;
+    opcionMenu?: OpcionMenu;
+    usuario?: Usuario;
+    indiceUsuario?: number;
+}
+
+interface OpcionMenu {
+    opcionMenu: 'Crear' | 'Borrar' | 'Buscar' | 'Actualizar';
+}
+
+interface BuscarUsuarioPorId {
+    idUsuario: string;
 }
