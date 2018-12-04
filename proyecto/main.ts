@@ -82,26 +82,6 @@ async function main() {
             }
         )
 
-
-    /*
-    try {
-        const respuestaInicializarBDD:RespuestaBDD = <RespuestaBDD> await inicialiarBDD();
-        const bdd = respuestaInicializarBDD.bdd;
-        const respuestaMenu = await inquirer.prompt(preguntaMenu);
-        switch (respuestaMenu.opcionMenu) {
-            case 'Crear':
-                // Preguntar datos del nuevo Usuario
-                const usuario = await inquirer.prompt(preguntaUsuario);
-                // CREAR USUARIO
-                bdd.usuarios.push(usuario); // JS
-                const respuestaGuardado = await guardarBDD(bdd);
-                main();
-                break;
-        }
-    } catch (e) {
-        console.error(e)
-    }
-    */
 }
 
 function inicialiarBDD() {
@@ -245,10 +225,14 @@ function opcionesRespuesta() {
                             )
                         );
                 case 'Buscar':
+                    return consultarid(respuestaBDD);
                     break;
                 case 'Actualizar':
                     return preguntarIdUsuario(respuestaBDD);
+                    break;
                 case 'Borrar':
+                    return consultarid(respuestaBDD);
+
                     break;
             }
         }
@@ -268,6 +252,25 @@ function ejecutarAcccion() {
                     const indice = respuestaBDD.indiceUsuario;
                     respuestaBDD.bdd.usuarios[indice].nombre = respuestaBDD.usuario.nombre;
                     return respuestaBDD;
+                case 'Buscar':
+                    const indiceb = respuestaBDD.indiceUsuario;
+                    if(indiceb ===-1){
+                        console.error('error')
+                    }else{
+                        console.log('Usuario Buscado',respuestaBDD.bdd.usuarios[indiceb])
+                    }
+                    return respuestaBDD;
+                case 'Borrar':
+                    const indicebor = respuestaBDD.indiceUsuario;
+                    if(indicebor === -1){
+                        console.error('error')
+                    }else{
+
+                        console.log('Usuario Buscado',respuestaBDD.bdd.usuarios[indicebor]);
+                        const user = respuestaBDD.bdd.usuarios
+                        user.splice(indicebor,1)
+                    }
+                    return respuestaBDD;
 
             }
         }
@@ -281,6 +284,32 @@ function guardarBaseDeDatos() {
             return rxjs.from(guardarBDD(respuestaBDD.bdd))
         }
     )
+}
+
+function consultarid(respuestaBDD: RespuestaBDD) {
+    return rxjs
+        .from(inquirer.prompt(preguntaBuscarUsuario))
+        .pipe(
+            map( // RESP ANT OBS
+                (respuesta: BuscarUsuarioPorId) => {
+                    const indiceUsuario = respuestaBDD.bdd
+                        .usuarios
+                        .findIndex( // -1
+                            (usuario: any) => {
+
+                                return usuario.id === respuesta.idUsuario
+
+                            }
+                        );
+
+                    respuestaBDD.indiceUsuario = indiceUsuario;
+
+                    return respuestaBDD;
+
+
+                }
+            )
+        );
 }
 
 interface BDD {
