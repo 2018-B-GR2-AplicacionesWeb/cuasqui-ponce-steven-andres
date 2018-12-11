@@ -14,6 +14,10 @@ import {Observable, of} from "rxjs";
 @Controller('Usuario') // Decoradores!
 export class AppController {
 
+    usuarios = [
+        {nombre:'Steven',id:2},{nombre:'Steven',id:2},{nombre:'Steven',id:3}
+    ]
+
     @Get('saludar')
     saludar(
         @Query() queryParams,
@@ -66,7 +70,33 @@ export class AppController {
         return of('Hola mundo');
     }
 
+    @Post('borrar/:idUsuario')
+    borrar(
+        @Param('idUsuario') idUsuario,
+        @Res() response
+    ){
+        const indiceUsuario = this
+            .usuarios
+            .findIndex(
+                (usuario)=>usuario.id == Number(idUsuario)
 
+            )
+        this.usuarios.splice(indiceUsuario,1)
+        response.render('inicio.ejs',{
+            nombre: 'Steven',
+            arreglo:this.usuarios
+        });
+    }
+
+    @Get('inicio')
+    inicio(
+        @Res() response
+    ){
+        response.render('inicio.ejs',{
+            nombre: 'Steven',
+            arreglo:this.usuarios
+        });
+    }
 
 
 

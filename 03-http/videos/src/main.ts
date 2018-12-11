@@ -9,6 +9,7 @@ import {AppModule} from './app.module';
 async function bootstrap() {
     //console.log(a)
     const app = await NestFactory.create(AppModule);
+    app.set('view engine','ejs');
     await app.listen(3000);
 }
 
