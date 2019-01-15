@@ -9,10 +9,11 @@ import {
     Query,
     Param,
     Res,
-    Post
+    Post, Body
 } from '@nestjs/common';
 import {AppService} from './app.service';
 import {Observable, of} from "rxjs";
+import {Usuario, UsuarioService} from "./usuario.service";
 
 // http://192.168.1.2:3000/Usuario/saludar     METODO -> GET
 // http://192.168.1.2:3000/Usuario/salir   METODO -> POST
@@ -25,21 +26,16 @@ import {Observable, of} from "rxjs";
 // SE EJECUTA ANTES DE ALGO
 @Controller('Usuario') // Decoradores!
 export class AppController {
+    // CONSTRUCTOR NO ES UN CONSTRUCTOR NORMAL!!!
 
-    usuarios = [
-        {
-            nombre: 'Adrian',
-            id: 1
-        },
-        {
-            nombre: 'Vicente',
-            id: 2
-        },
-        {
-            nombre: 'Carolina',
-            id: 3
-        }
-    ];
+    constructor(
+        private readonly _usuarioService: UsuarioService,
+        // private readonly _appService:AppService,
+    ) {
+
+    }
+
+
 
     @Get('saludar')
     saludar(
@@ -99,30 +95,52 @@ export class AppController {
     ) {
         response.render('inicio', {
             nombre: 'Adrian',
-            arreglo: this.usuarios
+            arreglo: this._usuarioService.usuarios
         });
     }
 
     @Post('borrar/:idUsuario')
     borrar(
-        @Param('idUsuario') idUsuario,
+        @Param('idUsuario') idUsuario: string,
         @Res() response
     ) {
-        const indiceUsuario = this
-            .usuarios
-            .findIndex(
-                (usuario) => usuario.id === Number(idUsuario)
-            );
-
-        this.usuarios.splice(indiceUsuario,1);
-
-
-        response.render('inicio', {
-            nombre: 'Adrian',
-            arreglo: this.usuarios
-        });
+        this._usuarioService.borrar(Number(idUsuario));
+        response.redirect('/Usuario/inicio');
     }
 
+    @Get('crear-usuario')
+    crearUsuario(
+        @Res() response
+    ) {
+        response.render(
+            'crear-usuario'
+        )
+    }
 
+    @Get('actualizar-usuario/:idUsuario')
+    actualizarUsuario(
+        @Param('idUsuario') idUsuario: string,
+        @Res() response
+    ) {
+        const usuarioAActualizar = this
+            ._usuarioService
+            .buscarPorId(Number(idUsuario));
 
+        response.render(
+            'crear-usuario', {
+                usuario: usuarioAActualizar
+            }
+        )
+    }
+
+    @Post('crear-usuario')
+    crearUsuarioFormulario(
+        @Body() usuario: Usuario,
+        @Res() response
+    ) {
+
+        this._usuarioService.crear(usuario);
+
+        response.redirect('/Usuario/inicio')
+    }
 }
